@@ -32,10 +32,12 @@ func ssl(o values) (func(net.Conn) (net.Conn, error), error) {
 		// behavior is discouraged, and applications that need certificate
 		// validation should always use verify-ca or verify-full.
 		if sslrootcert, ok := o["sslrootcert"]; ok {
-			if _, err := os.Stat(sslrootcert); err == nil {
-				verifyCaOnly = true
-			} else {
-				delete(o, "sslrootcert")
+			if sslrootcert != "system" {
+				if _, err := os.Stat(sslrootcert); err == nil {
+					verifyCaOnly = true
+				} else {
+					delete(o, "sslrootcert")
+				}
 			}
 		}
 	case "verify-ca":
