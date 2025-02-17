@@ -156,24 +156,39 @@ func sslCertificateAuthority(tlsConf *tls.Config, o values) error {
 	//
 	// https://github.com/postgres/postgres/blob/REL9_6_2/src/interfaces/libpq/fe-secure-openssl.c#L950-L951
 	if sslrootcert := o["sslrootcert"]; len(sslrootcert) > 0 {
-		tlsConf.RootCAs = x509.NewCertPool()
+		var caCertPool *x509.CertPool
 
-		sslinline := o["sslinline"]
-
-		var cert []byte
-		if sslinline == "true" {
-			cert = []byte(sslrootcert)
-		} else {
+		if sslrootcert == "system" {
 			var err error
-			cert, err = ioutil.ReadFile(sslrootcert)
+
+			caCertPool, err = x509.SystemCertPool()
 			if err != nil {
 				return err
 			}
+
+		} else {
+			caCertPool = x509.NewCertPool()
+
+			sslinline := o["sslinline"]
+
+			var cert []byte
+			if sslinline == "true" {
+				cert = []byte(sslrootcert)
+			} else {
+				var err error
+				cert, err = ioutil.ReadFile(sslrootcert)
+				if err != nil {
+					return err
+				}
+			}
+
+			if caCertPool.AppendCertsFromPEM(cert) {
+				return fmterrorf("couldn't parse pem in sslrootcert")
+			}
 		}
 
-		if !tlsConf.RootCAs.AppendCertsFromPEM(cert) {
-			return fmterrorf("couldn't parse pem in sslrootcert")
-		}
+		tlsConf.RootCAs = caCertPool
+		tlsConf.ClientCAs = caCertPool
 	}
 
 	return nil
