@@ -184,7 +184,7 @@ func sslCertificateAuthority(tlsConf *tls.Config, o values) error {
 				}
 			}
 
-			if caCertPool.AppendCertsFromPEM(cert) {
+			if !caCertPool.AppendCertsFromPEM(cert) {
 				return fmterrorf("couldn't parse pem in sslrootcert")
 			}
 		}
