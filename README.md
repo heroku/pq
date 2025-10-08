@@ -1,6 +1,9 @@
 # pq - A pure Go postgres driver for Go's database/sql package
 
-[![GoDoc](https://godoc.org/github.com/lib/pq?status.svg)](https://pkg.go.dev/github.com/lib/pq?tab=doc)
+[![GoDoc](https://godoc.org/github.com/mble-sfdc/pq?status.svg)](https://pkg.go.dev/github.com/mble-sfdc/pq?tab=doc)
+
+> [!WARNING]
+> This is an archived, unsupported fork of github.com/lib/pq.
 
 ## Install
 
